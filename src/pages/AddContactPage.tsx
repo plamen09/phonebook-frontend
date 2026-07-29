@@ -1,12 +1,10 @@
-import {
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 
+import { createUser, type CreateUserRequest } from "../api/users";
 
-type NewUser = {
+// We keep the form state completely flat so typing works naturally!
+type LocalFormState = {
   username: string;
   email: string;
   phonenumber: string;
@@ -15,7 +13,7 @@ type NewUser = {
 function AddContactPage() {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState<NewUser>({
+  const [formData, setFormData] = useState<LocalFormState>({
     username: "",
     email: "",
     phonenumber: "",
@@ -24,6 +22,7 @@ function AddContactPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // This single function now handles all text inputs smoothly
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
 
@@ -40,21 +39,15 @@ function AddContactPage() {
       setSubmitting(true);
       setError("");
 
-      const response = await fetch(
-        "http://localhost:8080/api/v1/create-user",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      // We translate the flat form data into the exact nested structure
+      // that your API and Go backend are demanding right here:
+      const payload: CreateUserRequest = {
+        username: formData.username,
+        email: formData.email,
+        phone_numbers: [formData.phonenumber],
+      };
 
-      if (!response.ok) {
-        const message = await response.text();
-        throw new Error(message || "Could not create user");
-      }
+      await createUser(payload);
 
       navigate("/users");
     } catch (error: unknown) {
@@ -69,57 +62,72 @@ function AddContactPage() {
   }
 
   return (
-    <div>
-      <h1>Add user</h1>
+    <main className="phonebook-home flex min-h-screen flex-col items-center justify-center px-6 py-12">
+      <div className="w-full max-w-md rounded-2xl border-2 border-black bg-white p-8 shadow-lg">
+        <h1 className="mb-6 text-center text-3xl font-bold text-black">
+          Add user
+        </h1>
 
-      {error && <p>{error}</p>}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="username" className="font-medium text-black">
+              Name
+            </label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              value={formData.username}
+              onChange={handleChange}
+              autoComplete="name"
+              placeholder="Enter name"
+              className="rounded-lg border border-gray-300 px-4 py-3 text-black outline-none focus:ring-2 focus:ring-(--phonebook-button-ring)"
+              required
+            />
+          </div>
 
-      <form onSubmit={handleSubmit} autoComplete="on">
-        <div>
-          <label htmlFor="username">Name</label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            value={formData.username}
-            onChange={handleChange}
-            autoComplete="name"
-            required
-          />
-        </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email" className="font-medium text-black">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              autoComplete="email"
+              onChange={handleChange}
+              placeholder="Enter email"
+              className="rounded-lg border border-gray-300 px-4 py-3 text-black outline-none focus:ring-2 focus:ring-(--phonebook-button-ring)"
+            />
+          </div>
 
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            autoComplete="email"
-            required
-          />
-        </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="phonenumber" className="font-medium text-black">
+              Phone number
+            </label>
+            <input
+              id="phonenumber"
+              name="phonenumber"
+              type="tel"
+              value={formData.phonenumber}
+              onChange={handleChange}
+              placeholder="Enter phone number"
+              className="rounded-lg border border-gray-300 px-4 py-3 text-black outline-none focus:ring-2 focus:ring-(--phonebook-button-ring)"
+              required
+            />
+          </div>
 
-        <div>
-          <label htmlFor="phonenumber">phonenumber</label>
-          <input
-            id="phonenumber"
-            name="phonenumber"
-            type="tel"
-            value={formData.phonenumber}
-            onChange={handleChange}
-            autoComplete="tel"
-            required
-          />
-        </div>
-
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Adding..." : "Add user"}
-        </button>
-      </form>
-    </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-2 rounded-lg bg-(--phonebook-button) px-6 py-3 font-semibold text-(--phonebook-button-text) transition hover:bg-(--phonebook-button-hover)"
+          >
+            {submitting ? "Adding..." : "Add user"}{" "}
+          </button>
+        </form>
+      </div>
+    </main>
   );
 }
-
 export default AddContactPage;

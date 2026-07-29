@@ -24,7 +24,7 @@ function ContactsPage({
 
   async function handleDelete(id: number, username?: string) {
     const confirmed = window.confirm(
-      `Are you sure you want to delete ${username ?? "this user"}?`
+      `Are you sure you want to delete ${username ?? "this user"}?`,
     );
 
     if (!confirmed) {
@@ -35,46 +35,83 @@ function ContactsPage({
   }
 
   return (
-    <main className="page">
-      <h1>Users</h1>
+    <main className="phonebook-home flex min-h-screen flex-col items-center px-6 py-12">
+      <div className="w-full max-w-4xl">
+        <h1 className="text-center text-5xl font-extrabold tracking-tight text-phonebook-title drop-shadow-sm sm:text-6xl">
+          Users
+        </h1>
 
-      <Link to="/">Back to home</Link>
+        <div className="mt-6 flex justify-center">
+          <Link
+            to="/"
+            className="text-base font-medium text-black underline underline-offset-4 hover:opacity-80"
+          >
+            Back to home
+          </Link>
+        </div>
 
-      <table className="users-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Phone number</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.ID}>
-              <td>{user.ID}</td>
-              <td>{user.Name}</td>
-
-              <td>
-                {user.phonenumber?.number ?? "No phone number"}
-              </td>
-
-              <td>
-                <Link to={`/users/${user.ID}`}>View</Link>
-
-                <button
-                  type="button"
-                  className="delete-button"
-                  onClick={() => handleDelete(user.ID, user.Name)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="mt-10 overflow-hidden rounded-2xl border border-white bg-white shadow-xl">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-black">
+                    ID
+                  </th>
+                  <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-black">
+                    Username
+                  </th>
+                  <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-black">
+                    Phone number
+                  </th>
+                  <th className="px-6 py-4 text-center text-sm font-bold uppercase tracking-wider text-black">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr
+                    key={user.ID}
+                    className="border-b border-gray-100 last:border-0 hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 text-black">{user.ID}</td>
+                    <td className="px-6 py-4 text-black">{user.Name}</td>
+                    <td className="px-6 py-4 text-black">{user.phonenumber?.[0]?.number ?? "No phone number"}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center gap-2">
+                        <Link
+                          to={`/users/${user.ID}`}
+                          className="inline-flex items-center justify-center rounded-lg bg-phonebook-button px-4 py-2 text-sm font-semibold text-black shadow transition-all hover:bg-phonebook-button-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-phonebook-button-ring"
+                        >
+                          View
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(user.ID,user.Name)}
+                          className="inline-flex items-center justify-center rounded-lg bg-phonebook-button px-4 py-2 text-sm font-semibold text-black shadow transition-all hover:bg-phonebook-button-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-phonebook-button-ring"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {users.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      className="px-6 py-8 text-center text-black"
+                    >
+                      No users yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

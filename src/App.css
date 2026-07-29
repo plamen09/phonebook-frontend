@@ -1,4 +1,8 @@
-.counter {
+
+
+@import "tailwindcss";
+
+ .counter {
   font-size: 16px;
   padding: 5px 10px;
   border-radius: 5px;
@@ -212,7 +216,7 @@
   max-width: 650px;
   margin: 40px auto;
   padding: 32px;
-  background: rgb(174, 166, 166);
+  background: rgb(148, 198, 223);
   border: 1px solid #e5e7eb;
   border-radius: 18px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
@@ -243,7 +247,7 @@
   height: 72px;
   border-radius: 50%;
   background: #2563eb;
-  color: rgb(222, 193, 193);
+  color: rgb(217, 202, 202);
   font-size: 30px;
   font-weight: bold;
 }
@@ -262,12 +266,12 @@
 }
 
 .detail-label {
-  color: #6b7280;
+  color: #222428;
   font-weight: 600;
 }
 
 .detail-row a {
-  color: #2563eb;
+  color: #141516;
   text-decoration: none;
 }
 
@@ -280,7 +284,7 @@
   justify-content: flex-end;
   gap: 12px;
   padding-top: 20px;
-  border-top: 1px solid #47536a;
+  border-top: 1px solid #273145;
 }
 
 .primary-button,
@@ -294,14 +298,14 @@
 }
 
 .primary-button {
-  background: #2563eb;
-  color: white;
+  background: hsl(218, 22%, 57%);
+  color: #1f2937
 }
 
 .secondary-button,
 .back-link {
-  background: #b6bcc6;
-  color: #1f2937;
+  background: hsl(218, 22%, 57%);
+  color: #122643;
 }
 
 .primary-button:hover,
@@ -329,4 +333,4 @@
   .secondary-button {
     text-align: center;
   }
-}
+} 
