@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 
-import {
-  deleteUser,
-  getUsers,
-} from "../api/users";
+
 import type { User } from "../types/users";
+import { usersClient } from "../api/usersClient";
 
 export function useUsers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -16,7 +14,7 @@ export function useUsers() {
       setLoading(true);
       setError("");
 
-      const loadedUsers = await getUsers();
+      const loadedUsers = await usersClient.getAll();
       setUsers(loadedUsers);
     } catch (error: unknown) {
       setError(
@@ -33,7 +31,7 @@ export function useUsers() {
     try {
       setError("");
 
-      await deleteUser(id);
+      await usersClient.delete(id);
 
       setUsers((currentUsers) =>
         currentUsers.filter((user) => user.ID !== id),
@@ -63,7 +61,7 @@ export function useUsers() {
   }
 
   useEffect(() => {
-    void loadUsers();
+     loadUsers();
   }, []);
 
   return {

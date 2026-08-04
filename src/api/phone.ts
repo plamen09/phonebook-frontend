@@ -1,66 +1,43 @@
-export type CreatePhoneRequest = {
-  user_id: number;
-  number: string;
-};
 
-type Phone = {
-  ID: number;
-  UserID: number;
-  Number: string;
-};
+import { Phone } from "../types/phone";
+import { apiClient } from "./api";
+import { CreatePhoneRequest, UpdatePhoneRequest } from "./request.ts/PhoneRequest";
 
-type CreatePhoneResponse = {
-  message: string;
-  phone: Phone;
-};
+type NewType = { message: string; phone: Phone };
 
-const API_URL = "http://localhost:8080/api/v1";
+type CreatePhoneResponse = NewType;
 
-export async function createPhone(
-  request: CreatePhoneRequest,
-): Promise<Phone> {
-  const response = await fetch(`${API_URL}/phone`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new Error(data?.error ?? "Failed to create phone");
+export class PhonesClient {
+  getAll(): Promise<Phone[]> {
+    return apiClient.get<Phone[]>("/phones");
   }
 
-  const data = (await response.json()) as CreatePhoneResponse;
-
-  return data.phone;
-}
-
-export async function getPhones(): Promise<Phone[]> {
-  const response = await fetch(`${API_URL}/phones`);
-
-  if (!response.ok) {
-    throw new Error("Failed to load phones");
+  getByID(phoneID: number): Promise<Phone> {
+    return apiClient.get<Phone>(`/phones/${phoneID}`);
   }
 
-  const data = (await response.json()) as {
-    phones: Phone[];
-  };
+  getByUserID(userID: number): Promise<Phone[]> {
+    return apiClient.get<Phone[]>("/phones", {
+      params: {
+        user_id: userID,
+      },
+    });
+  }
 
-  return data.phones;
-}
+  create(request: CreatePhoneRequest): Promise<void> {
+    return apiClient.post<void, CreatePhoneRequest>("/phone", request);
+  }
 
-export async function deletePhone(phoneID: number): Promise<void> {
-  const response = await fetch(
-    `${API_URL}/phone/${phoneID}`,
-    {
-      method: "DELETE",
-    },
-  );
+  update(phoneID: number, request: UpdatePhoneRequest): Promise<void> {
+    return apiClient.put<void, UpdatePhoneRequest>(
+      `/phone/${phoneID}`,
+      request,
+    );
+  }
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new Error(data?.error ?? "Failed to delete phone");
+  delete(phoneID: number): Promise<void> {
+    return apiClient.delete<void>(`/phone/${phoneID}`);
   }
 }
+
+export const phonesClient = new PhonesClient();
