@@ -1,7 +1,6 @@
-import type { CreateUserRequest, User } from "../types/users";
-
+import { User } from "../types/users";
 import { apiClient } from "./api";
-import { UpdateUserRequest } from "./request.ts/UserRequest";
+import { CreateUserRequest, UpdateUserRequest } from "./request.ts/UserRequest";
 
 export class UsersClient {
   getAll(): Promise<User[]> {

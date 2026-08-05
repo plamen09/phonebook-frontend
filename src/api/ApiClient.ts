@@ -1,13 +1,13 @@
-import axios, {
-  type AxiosInstance,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-} from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 export class ApiClient {
   private readonly client: AxiosInstance;
 
   constructor(baseURL: string) {
+    if (!baseURL) {
+      throw new Error("API base URL is required");
+    }
+
     this.client = axios.create({
       baseURL,
       timeout: 10_000,
@@ -51,7 +51,7 @@ export class ApiClient {
     return response.data;
   }
 
-  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  async delete<T = void>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response: AxiosResponse<T> = await this.client.delete(url, config);
 
     return response.data;

@@ -1,8 +1,9 @@
-
-
 import { ApiClient } from "./ApiClient";
 
-export const apiClient = new ApiClient(
-  import.meta.env.VITE_API_URL ??
-    "http://localhost:8080/api/v1",
-);
+const apiURL = import.meta.env.VITE_API_URL;
+
+if (!apiURL) {
+  throw new Error("VITE_API_URL is not configured");
+}
+
+export const apiClient = new ApiClient(apiURL);
