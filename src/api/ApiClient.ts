@@ -17,8 +17,12 @@ export class ApiClient {
     });
   }
 
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.get(url, config);
+  async get<T>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
+    const response: AxiosResponse<T> =
+      await this.client.get(url, config);
 
     return response.data;
   }
@@ -28,11 +32,8 @@ export class ApiClient {
     request: TRequest,
     config?: AxiosRequestConfig,
   ): Promise<TResponse> {
-    const response: AxiosResponse<TResponse> = await this.client.post(
-      url,
-      request,
-      config,
-    );
+    const response: AxiosResponse<TResponse> =
+      await this.client.post(url, request, config);
 
     return response.data;
   }
@@ -42,17 +43,18 @@ export class ApiClient {
     request: TRequest,
     config?: AxiosRequestConfig,
   ): Promise<TResponse> {
-    const response: AxiosResponse<TResponse> = await this.client.put(
-      url,
-      request,
-      config,
-    );
+    const response: AxiosResponse<TResponse> =
+      await this.client.put(url, request, config);
 
     return response.data;
   }
 
-  async delete<T = void>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.delete(url, config);
+  async delete<T = void>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
+    const response: AxiosResponse<T> =
+      await this.client.delete(url, config);
 
     return response.data;
   }
