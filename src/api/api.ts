@@ -1,9 +1,3 @@
-import { ApiClient } from "./ApiClient";
+import { ApiClient } from "./client";
 
-const apiURL = import.meta.env.VITE_API_URL;
-
-if (!apiURL) {
-  throw new Error("VITE_API_URL is not configured");
-}
-
-export const apiClient = new ApiClient(apiURL);
+export const apiClient = new ApiClient("/api/v1");

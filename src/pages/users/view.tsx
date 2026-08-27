@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
 import { Phone } from "../../types/phone";
-import { phonesClient } from "../../api/phone";
-import { usersClient } from "../../api/usersClient";
+
 import { User } from "../../types/users";
+import { usersClient } from "../../api/client/user";
+import { useAuth } from "../../../auth/AuthContext";
+import { phonesClient } from "../../api/client/phone";
 const emptyForm: EditUserForm = {
   name: "",
   email: "",
@@ -25,6 +27,7 @@ function EditUserPage() {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | undefined>(undefined);
+  const { isAdmin, user: loggedInUser } = useAuth();
 
   const loadData = useCallback(async () => {
     const userID = Number(id);
@@ -41,7 +44,9 @@ function EditUserPage() {
 
       const [loadedUser] = await Promise.all([usersClient.getByID(userID)]);
 
-      const phones = Array.isArray(loadedUser.phonenumber)? loadedUser.phonenumber: []
+      const phones = Array.isArray(loadedUser.phonenumber)
+        ? loadedUser.phonenumber
+        : [];
 
       const loadedForm: EditUserForm = {
         name: loadedUser.Name,
@@ -157,6 +162,11 @@ function EditUserPage() {
       return;
     }
 
+    if (!canEdit) {
+      setError("You do not have permission to edit this user");
+      return;
+    }
+
     const cleanedName = form.name.trim();
     const cleanedEmail = form.email.trim();
 
@@ -205,7 +215,10 @@ function EditUserPage() {
   }
   async function handleAddPhone(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+    if (!canEdit) {
+      setError("You do not have permission to add phone numbers");
+      return;
+    }
     if (!user) {
       setError("User not found");
       return;
@@ -239,6 +252,8 @@ function EditUserPage() {
       setSubmitting(false);
     }
   }
+  const canEdit =
+    isAdmin || (loggedInUser && user && loggedInUser.ID === user.ID);
 
   if (!user) {
     return (
@@ -260,6 +275,7 @@ function EditUserPage() {
     .trim()
     .charAt(0)
     .toUpperCase();
+
   return (
     <main className="phonebook-home flex min-h-screen items-start justify-center px-4 py-10">
       <div className="w-full max-w-3xl rounded-2xl border-2 border-white bg-white/80 p-6 shadow-xl backdrop-blur-sm">
@@ -400,7 +416,7 @@ function EditUserPage() {
             )}
 
             {/* Edit save/cancel buttons */}
-            {isEditing && (
+            {canEdit && isEditing && (
               <div className="mt-6 flex flex-col gap-2 sm:flex-row">
                 <button
                   type="button"
@@ -472,7 +488,7 @@ function EditUserPage() {
 
           {/* Right action buttons */}
           <div className="flex shrink-0 flex-col gap-3 sm:items-end">
-            {!isEditing && (
+            {canEdit && !isEditing && (
               <button
                 type="button"
                 onClick={() => {
@@ -486,7 +502,7 @@ function EditUserPage() {
               </button>
             )}
 
-            {!isEditing && (
+            {canEdit && !isEditing && (
               <button
                 type="button"
                 onClick={() => {
